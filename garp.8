@@ -1,0 +1,114 @@
+.TH GARP 8 "October 24, 1999" "garp" "MIND Documentation"
+.SH NAME
+garp - check unused IP addresses and automagically assign them
+
+.SH SYNOPSIS
+.B garp 
+[-Vhpvv] [-c count] [-i interface] [-t timeout] address[/mask] ...
+
+.SH DESCRIPTION
+\fBGarp\fR is a Gratuitous ARP implementation. 
+\fBGarp\fR an be used to check for unused IP addresses and automagically
+(and randomly) assign unused IP addresses (from a given IP range).
+.LP
+When running \fBgarp\fR with the probeonly-option, it will check whether the
+addresses provided as arguments are unused.
+.LP
+When running \fBgarp\fR without the probeonly-option, it will randomly test a
+"matching" IP address by sending ARP requests. If no reply is returned, it'll
+assume that the IP address is unused and will assign it to the interface (and
+afterwards test it again). If a reply is detected it will try another random
+IP address until a given number attempts or indefinitely.
+
+.SH OPTIONS
+.TP
+\fB-V, --version\fR
+Print version information.
+.TP
+\fB-h, --help\fR
+Print a one-line help message and exit.
+.TP
+\fB-p, --probeonly\fR
+Only test to see if an IP address is unused (but don't assign an IP address).
+.TP
+\fB-q, --quiet\fR
+Shuts up and stays quiet.
+.TP
+\fB-v, --verbose\fR
+Tell the user what is going on by being verbose.
+.TP
+\fB-vv, --moreverbose\fR
+Tell the user what is going on by printing lots of ugly debugging information.
+.SH PARAMETERS
+.TP
+\fB-c, --count \fIcount\fR
+Specify how many attempts need to be undertaken to assign an unused IP 
+address. 
+.B The default is 0, which means indefinitely.
+.TP
+\fB-i, --interface \fIname\fR
+Specify a network interface for which to assign an IP address.  
+.B The default is eth0.
+.TP
+\fB-t, --timeout \fImilliseconds\fR
+Specify the timeout to wait for ARP replies in milliseconds.  
+.B The default timeout is 300 milliseconds.
+
+.SH ARGUMENTS
+.TP
+\fBaddress\fR
+Address can be either a hostname, a network name, or a plain IP address.
+.TP
+\fBmask\fR
+The mask can be either a network mask or a plain number, specifying the
+number of 1's at the left side of the network mask. Thus, a mask of 24 is
+equivalent to 255.255.255.0.
+
+.SH DIAGNOSTICS
+Normally, exit status is \fB0\fR if an unused IP address is found and assigned.
+The IP address is printed to STDOUT. Exit status is \fB1\fR if there is a 
+problem with one of the arguments. Exit status is \fB2\fR if there was a 
+problem with the interface and finally exit status is \fB3\fR if it couldn't 
+assign an unused IP address after a given number of attempts.
+.LP
+There is an exception when using \fB-p\fR or 
+\fB--probeonly\fR, exit status
+\fB0\fR is used to indicate that a given address is unused. Exit status \fB1\fR
+indicates that the IP address is used by another host.
+
+.SH BUGS
+Under construction ;)
+
+Email bug reports to: <\fBgarp@mind.be\fR>
+
+.SH NOTES
+Using \fBgarp\fR is not a fail-proof solution, in certain conditions 
+(mostly misconfigured, congested or broken networks) ARP replies can't be
+detected and therefor \fBgarp\fR wrongly assigns the IP address causing 2
+machines to have the same IP address.  Resulting in both machines to be unable
+to use the network normally.
+.LP
+\fBThis is not a bug or a design-issue, but a result of network-problems.\fR
+.LP
+Another problem will occur when a whole subnet is spread over different ports
+on some switches. These switches do weird stuff with ARP requests or MAC 
+addresses, which will confuse \fBgarp\fR and will fail. Please test toroughly
+before using \fBgarp\fR on a "switched" network.
+.LP
+You might want to consider using a DHCP or RARP as these provide better
+alternatives. Use \fBgarp\fR when you cannot set up a DHCP or RARP server.
+
+.SH DOWNLOAD
+\fBGarp\fR can be downloaded from 
+\fBhttp://mind.be/software/\fR
+
+.SH SEE ALSO
+arp(8), rarp(8), ifconfig(8), route(8)
+
+.SH AUTHORS
+Ulrik De Bie, <\fBulrik@mind.be\fR> - design and implementation
+.LP
+Dag Wieers, <\fBdag@mind.be\fR> - documentation and ideas
+.LP
+Contact us at:  <\fBgarp@mind.be\fR>
+
